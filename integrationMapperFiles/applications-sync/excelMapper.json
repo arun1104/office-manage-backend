@@ -1,0 +1,26 @@
+{
+"integration":"excel",
+"excelAttributeMapper":{
+    "VENDOR ID": { "field": "vendorId", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "APPLICATION NO": { "field": "applicationId", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "CUSTOMER NAME": { "field": "customerName", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "BANK NAME": { "field": "bankName", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "STATUS":  { "field": "status", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "MOBILE NO": { "field": "mobileNo", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" }
+  },
+  "dataHandlingOptions":{
+    "entity":"vendor-applications",
+    "operationId":"addVendorApplications",
+    "tenantInfo":{
+       "tenantId":"506bh5p8ku6618umo9j1jon7ip",
+       "branchId":"506bh5p8ku6618umo9j1jon7ip-noms-arun-pune-pune"
+    },
+    "replaceEvenIfExists": true,
+    "notifyOnError": true,
+    "primaryKey":"membershipId"
+  },
+  "errorHandling":{
+    "continueEvenIfError": true,
+    "notifyOnError": true
+  }
+}

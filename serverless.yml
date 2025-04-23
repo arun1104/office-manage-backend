@@ -1,0 +1,203 @@
+service: multi-tenant-noms-serverless
+useDotenv: true
+
+custom:
+  accountId: ${env:accountId}
+  clientUpdateQueueName: ${env:CLIENT_UPDATE_QUEUE_NAME}
+  clientUpdateQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.clientUpdateQueueName}"
+  clientUpdateDLQueueName: ${env:CLIENT_UPDATE_QUEUE_NAME}-DLQ
+  clientUpdateDLQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.clientUpdateQueueName}-DLQ"
+  taskMessageCountQueueName: ${env:TASK_MESSAGE_COUNT_QUEUE_NAME}
+  taskMessageCountQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.taskMessageCountQueueName}"
+  taskMessageCountDLQueueName: ${env:TASK_MESSAGE_COUNT_QUEUE_NAME}-DLQ
+  taskMessageCountDLQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.taskMessageCountQueueName}-DLQ"
+  taskToBeCreatedQueueName: ${env:TASK_TO_BE_CREATED_QUEUE_NAME}
+  taskToBeCreatedQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.taskToBeCreatedQueueName}"
+  taskToBeCreatedDLQueueName: ${env:TASK_TO_BE_CREATED_QUEUE_NAME}-DLQ
+  taskToBeCreatedDLQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.taskToBeCreatedQueueName}-DLQ"
+  realtimeMessageQueueName: ${env:REALTIME_MESSAGE_QUEUE_NAME}
+  realtimeMessageQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.realtimeMessageQueueName}"
+  realtimeMessageDLQueueName: ${env:REALTIME_MESSAGE_QUEUE_NAME}-DLQ
+  realtimeMessageDLQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.realtimeMessageDLQueueName}"
+  reportGenerationQueueName: ${env:REPORT_GENERATION_QUEUE_NAME}
+  reportGenerationQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.reportGenerationQueueName}"
+  reportGenerationDLQueueName: ${env:REPORT_GENERATION_QUEUE_NAME}-DLQ
+  reportGenerationDLQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.reportGenerationQueueName}-DLQ"
+  taskNotificationsQueueName: ${env:TASK_NOTIFICATIONS_QUEUE_NAME}
+  taskNotificationsQueueArn: "arn:aws:sqs:${self:provider.region}:${self:custom.accountId}:${self:custom.taskNotificationsQueueName}"
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${env:AWS_REGION, 'us-east-1'}
+
+  environment:
+    accountId: ${env:accountId}
+    mongoUrl: ${env:mongoUrl}
+    SERVERLESS: ${env:SERVERLESS}
+    SOURCE_MONGO_URL: ${env:SOURCE_MONGO_URL}
+    ORG_NAME: ${env:ORG_NAME}
+    WEBSOCKET_URL: ${env:WEBSOCKET_URL}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource: ${self:custom.taskToBeCreatedQueueArn}
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:BatchWriteItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:${self:custom.accountId}:table/multi-tenant-noms
+            - arn:aws:dynamodb:${self:provider.region}:${self:custom.accountId}:table/multi-tenant-noms/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource: 
+            - arn:aws:s3:::n-oms-organization-config/*
+
+resources:
+  Resources:
+    ReportGenerationQueueDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.reportGenerationQueueName}-DLQ
+
+    ReportGenerationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.reportGenerationQueueName}
+        RedrivePolicy:
+          deadLetterTargetArn: ${self:custom.reportGenerationDLQueueArn}
+          maxReceiveCount: 3
+      DependsOn: ReportGenerationQueueDLQ
+
+    TaskMessageCountQueueDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.taskMessageCountQueueName}-DLQ
+
+    TaskMessageCountQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.taskMessageCountQueueName}
+        RedrivePolicy:
+          deadLetterTargetArn: ${self:custom.taskMessageCountDLQueueArn}
+          maxReceiveCount: 3
+      DependsOn: TaskMessageCountQueueDLQ
+
+    UpdateClientQueueDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.clientUpdateQueueName}-DLQ
+
+    UpdateClientQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.clientUpdateQueueName}
+        RedrivePolicy:
+          deadLetterTargetArn: ${self:custom.clientUpdateDLQueueArn}
+          maxReceiveCount: 3
+      DependsOn: UpdateClientQueueDLQ
+    TaskDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.taskToBeCreatedQueueName}-DLQ
+
+    TaskQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.taskToBeCreatedQueueName}
+        RedrivePolicy:
+          deadLetterTargetArn: ${self:custom.taskToBeCreatedDLQueueArn}
+          maxReceiveCount: 3
+      DependsOn: TaskDLQ
+
+    RealtimeMessageDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.realtimeMessageDLQueueName}
+
+    RealtimeMessageQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.realtimeMessageQueueName}
+        RedrivePolicy:
+          deadLetterTargetArn: ${self:custom.realtimeMessageDLQueueArn}
+          maxReceiveCount: 3
+      DependsOn: RealtimeMessageDLQ
+
+functions:
+  websocketConnectHandler:
+    handler: serverless/websocket/connection/handler.connectionHandler
+    events:
+      - websocket:
+          route: $connect
+  websocketDisconnectHandler:
+    handler: serverless/websocket/disconnect/handler.disconnectHandler
+    events:
+      - websocket:
+          route: $disconnect
+  dateScheduleChecker:
+    handler: serverless/dateScheduleChecker/handler.cronHandler
+    events:
+      - schedule: cron(0 1 * * ? *)
+
+  dashboardStats:
+    handler: serverless/dashboardUpdateScheduler/handler.sqsHandler
+    events:
+      - schedule: cron(0 0 * * ? *)
+
+  createAutomatedTaskForClient:
+    handler: serverless/taskCreation/handler.sqsHandler
+    events:
+      - sqs:
+          arn: ${self:custom.taskToBeCreatedQueueArn}
+          batchSize: 1
+  updateClient:
+    handler: serverless/clientUpdate/handler.sqsHandler
+    events:
+      - sqs:
+          arn: ${self:custom.clientUpdateQueueArn}
+          batchSize: 1
+  taskMesssageCount:
+    handler: serverless/messageCount/handler.sqsHandler
+    events:
+      - sqs:
+          arn: ${self:custom.taskMessageCountQueueArn}
+          batchSize: 1
+  realtimeMessageHandler:
+    handler: serverless/realtimeMessage/handler.sqsHandler
+    timeout: 300
+    events:
+      - sqs:
+          arn: ${self:custom.realtimeMessageQueueArn}
+          batchSize: 1
+
+  reportGenerationHandler:
+    handler: serverless/reportGeneration/handler.sqsHandler
+    events:
+      - sqs:
+          arn: ${self:custom.reportGenerationQueueArn}
+          batchSize: 1
+  generalSqsConsumer:
+    handler: serverless/sqs-consumer/sqsHandler.sqsHandler
+    timeout: 60
+    events:
+      - sqs:
+          arn: ${self:custom.taskNotificationsQueueArn}
+          batchSize: 1
+

@@ -1,0 +1,3 @@
+export const CLIENT_IDENTITY= {
+    NO_PAN_AVAILABLE: 'NO_PANAVBL',
+}

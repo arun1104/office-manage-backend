@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Run server",
+        "program": "${workspaceFolder}/app.ts",
+        "preLaunchTask": "npm: build",
+        "sourceMaps": true,
+        "outputCapture": "std",
+        "smartStep": true,
+        "internalConsoleOptions": "openOnSessionStart",
+        "outDir": "${workspaceRoot}/bin",
+        "runtimeExecutable": null,
+        "stopOnEntry": false,
+        "runtimeArgs": ["-r", "tsconfig-paths/register", "-r", "dotenv/config"],
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug an Integration Test",
+        "program": "${workspaceFolder}/node_modules/.bin/jest",
+        "runtimeArgs": [
+          "--require=dotenv/config"
+      ],
+        "args": [
+          "--runTestsByPath",
+          "${relativeFile}",
+          "--detectOpenHandles",
+          "--forceExit"
+        ],
+        "env": {
+            "JEST_CONFIG": "./jest.config.js",
+            "orgId":"506bh5p8ku6618umo9j1jon7ip",
+            "mongoUrl":"mongodb+srv://arunrajeevan:TTest11041991@cluster0.alkek.mongodb.net/multi-tenant-n-oms?retryWrites=true&w=majority",
+            "All_Tenants_S3_Bucket":"multi-tenant-noms-configurations"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "windows": {
+          "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+        },
+      }
+    ]
+  }
+  

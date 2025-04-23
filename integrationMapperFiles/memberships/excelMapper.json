@@ -1,0 +1,31 @@
+{
+"integration":"excel",
+"excelAttributeMapper":{
+    "S.Number": { "field": "serialNo", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Initial": { "field": "initial", "type": "string","valueToFillIfNotPresent":" " },
+    "First Name": { "field": "firstName", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Last Name": { "field": "lastName", "type": "string","valueToFillIfNotPresent":" " },
+    "Name": { "field": "name", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Address": { "field": "address", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Location": { "field": "location", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Phone": { "field": "phone", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE" },
+    "Deceased": { "field": "deceased", "type": "boolean","valueToFillIfNotPresent":false },
+    "Reg No": { "field": "regNo", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE"  },
+    "Reg date": { "field": "startDate", "type": "string","valueToFillIfNotPresent":"NOT_AVAILABLE"  }
+  },
+  "dataHandlingOptions":{
+    "entity":"memberships",
+    "operationId":"addMembership",
+    "tenantInfo":{
+       "tenantId":"506bh5p8ku6618umo9j1jon7ip",
+       "branchId":"506bh5p8ku6618umo9j1jon7ip-noms-arun-pune-pune"
+    },
+    "replaceEvenIfExists": true,
+    "notifyOnError": true,
+    "primaryKey":"membershipId"
+  },
+  "errorHandling":{
+    "continueEvenIfError": true,
+    "notifyOnError": true
+  }
+}

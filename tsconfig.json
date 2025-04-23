@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "target": "es6",
+    "rootDir": "./",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "outDir": "bin",
+    "baseUrl": ".",
+    "paths": {
+      "@constants": ["src/shared/constants/index.ts"],
+      "@interfaces": ["src/shared/interfaces/index.ts"],
+      "@enums": ["src/shared/enums/index.ts"],
+      "@routing": ["src/routing/index.ts"],
+      "@utilities": ["src/shared/utilities/index.ts"],
+      "@middlewares":["src/middlewares/index.ts"],
+      "@users":["src/apis/users/index.ts"],
+      "@entities":["src/apis/entity/index.ts"],
+      "@configurations":["src/apis/configurations/index.ts"],
+      "@infraManagement": ["src/apis/infraManagement/index.ts"],
+      "@tenantManagement": ["src/apis/tenantManagement/index.ts"],
+      "@fileManagement": ["src/apis/files/index.ts"],
+      "@taskPeriods": ["src/apis/taskPeriods/index.ts"],
+      "@workflows": ["src/apis/workflows/index.ts"],
+      "@advanceSearchFilter": ["src/apis/advanceSearchAndFiltering/index.ts"],
+      "@integrations": ["src/integrations/index.ts"],
+      "@dynamoEntities": ["src/apis/dynamoEntities/index.ts"],
+      "@calendarEvents": ["src/apis/calendarEvents/index.ts"],
+      "@dashboards": ["src/apis/dashboards/index.ts"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "tests"
+  ]
+} 
