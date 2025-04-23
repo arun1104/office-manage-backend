@@ -29,9 +29,9 @@ jobs:
         
       - name: Build Docker image
         run: |
-          docker build -t arunrajeevan1104/n-oms:multi-tenant-backend-prod .
+          docker build -t arunrajeevan1104/office-manage-backend .
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push arunrajeevan1104/n-oms:multi-tenant-backend-prod
+          docker push arunrajeevan1104/office-manage-backend
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
@@ -42,6 +42,6 @@ jobs:
           port: 22
           script: |
             docker-compose down
-            docker rmi arunrajeevan1104/n-oms:multi-tenant-backend-prod
+            docker rmi arunrajeevan1104/office-manage-backend
             docker-compose pull
             docker-compose up -d
